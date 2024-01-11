@@ -4,9 +4,18 @@ This project will explore working with LangChain.js - inspired by [DeepLearning.
 
 ## Getting started
 
-As part of the initial setup, please install Deno on your system.
+If Deno has been installed on your system, you should be able to rub the `main.js` file with:
+
+```sh
+% deno run main.js
+
+# OPTIONAL: If Node.js and npm are installed, you can run the start script in package.json
+% npm start
+```
 
 ### Install Deno
+
+As part of the initial setup, please install Deno on your system.
 
 ```sh
 # Install Deno on macOS
