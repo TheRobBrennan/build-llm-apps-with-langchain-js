@@ -163,3 +163,19 @@ for await (const chunk of stream) {
   console.log(chunk);
 }
 // --------------------------------------------------------------------------
+
+// --------------------------------------------------------------------------
+// LangChain Expression Language (LCEL) - Batch - Output parser strings
+// --------------------------------------------------------------------------
+const inputs = [
+  { product: "large calculators" },
+  { product: "alpaca wool sweaters" }
+];
+
+// Batch is useful for performing concurrent operations and multiple generations simultaneously
+const batchResponse = await nameGenerationChain.batch(inputs)
+
+console.log(
+  `batchResponse: ${JSON.stringify(batchResponse, null, 2)}\n`,
+);
+// --------------------------------------------------------------------------
