@@ -101,3 +101,17 @@ console.log(
   }\n`,
 );
 // --------------------------------------------------------------------------
+
+// --------------------------------------------------------------------------
+// LangChain Expression Language (LCEL)
+// --------------------------------------------------------------------------
+const chain = prompt.pipe(model);
+
+const chainResponse = await chain.invoke({
+  product: "colorful socks",
+});
+
+console.log(
+  `chainResponse: ${JSON.stringify(chainResponse, null, 2)}\n`,
+);
+// --------------------------------------------------------------------------
