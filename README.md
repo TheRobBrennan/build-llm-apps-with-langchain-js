@@ -10,15 +10,15 @@ Please see the _Install Deno_ section below if you do not have Deno installed on
 
 If you do not have an OpenAI account, please create a free account and a new API key for this project at [https://platform.openai.com/api-keys](https://platform.openai.com/api-keys).
 
-Once you have an OpenAI API key that you can use for this project, please copy `.env.sample` to `.env` and replace the placeholder values.
+Once you have an OpenAI API key that you can use for this project, please copy the `.env.sample` file to `.env` and replace the placeholder values.
 
-If Deno has been installed on your system, you should be able to run the `main.js` file with:
+If your environment is set correctly, you should be able to run the `main.js` file within each `src/lesson-#` folder with:
 
 ```sh
-% deno run --allow-read --allow-net --allow-env main.ts
+% deno run --allow-read --allow-net --allow-env ./src/lesson-#/main.ts
 
-# OPTIONAL: Run the start script in package.json
-% npm start
+# OPTIONAL: Run the start script for the appropriate lesson in package.json
+% npm run start:lesson-#
 ```
 
 ### Install Deno
@@ -30,7 +30,7 @@ As part of the initial setup, please install Deno on your system.
 % curl -fsSL https://deno.land/install.sh | sh
 ```
 
-Once Deno is installed, you may be encouraged to update your `$HOME/.zshrc` (or similar) file with something like:
+Next, you may be encouraged to update your `$HOME/.zshrc` (or similar) file with something like:
 
 ```sh
 # ~/.zshrc
