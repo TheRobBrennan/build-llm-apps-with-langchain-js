@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "description": "This project will explore working with LangChain.js - inspired by [DeepLearning.AI: Build LLM Apps with LangChain.js](https://www.deeplearning.ai/short-courses/build-llm-apps-with-langchain-js/).",
   "scripts": {
-    "start": "deno run --allow-read main.js",
+    "start": "deno run --allow-read main.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

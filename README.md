@@ -4,12 +4,20 @@ This project will explore working with LangChain.js - inspired by [DeepLearning.
 
 ## Getting started
 
-If Deno has been installed on your system, you should be able to rub the `main.js` file with:
+This project will require an OpenAI API key as well as Deno.
+
+Please see the _Install Deno_ section below if you do not have Deno installed on your system.
+
+If you do not have an OpenAI account, please create a free account and a new API key for this project at [https://platform.openai.com/api-keys](https://platform.openai.com/api-keys).
+
+Once you have an OpenAI API key that you can use for this project, please copy `.env.sample` to `.env` and replace the placeholder values.
+
+If Deno has been installed on your system, you should be able to run the `main.js` file with:
 
 ```sh
-% deno run --allow-read main.js
+% deno run --allow-read main.ts
 
-# OPTIONAL: If Node.js and npm are installed, you can run the start script in package.json
+# OPTIONAL: Run the start script in package.json
 % npm start
 ```
 
@@ -28,7 +36,7 @@ Once Deno is installed, you may be encouraged to update your `$HOME/.zshrc` (or 
 # ~/.zshrc
 ...
 
-export DENO_INSTALL="/Users/rob/.deno"
+export DENO_INSTALL="/Users/xxxxx/.deno"
 export PATH="$DENO_INSTALL/bin:$PATH"
 
 ```
