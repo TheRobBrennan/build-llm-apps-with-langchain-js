@@ -15,7 +15,7 @@ Once you have an OpenAI API key that you can use for this project, please copy `
 If Deno has been installed on your system, you should be able to run the `main.js` file with:
 
 ```sh
-% deno run --allow-read --allow-net main.ts
+% deno run --allow-read --allow-net --allow-env main.ts
 
 # OPTIONAL: Run the start script in package.json
 % npm start
