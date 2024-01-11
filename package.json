@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/TheRobBrennan/build-llm-apps-with-langchain-js/issues"
   },
-  "homepage": "https://github.com/TheRobBrennan/build-llm-apps-with-langchain-js#readme"
+  "homepage": "https://github.com/TheRobBrennan/build-llm-apps-with-langchain-js#readme",
+  "dependencies": {
+    "langchain": "^0.1.2"
+  }
 }
