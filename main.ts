@@ -1,5 +1,4 @@
 import { config } from "https://deno.land/x/dotenv@v3.2.2/mod.ts";
-
 import { ChatOpenAI } from "npm:@langchain/openai";
 
 // Load environment variables from our .env file
