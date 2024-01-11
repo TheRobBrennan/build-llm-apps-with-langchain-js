@@ -150,3 +150,16 @@ console.log(
   `nameGenerationChainAsRunnableSequenceResponse:\n\n${nameGenerationChainAsRunnableSequenceResponse}\n`,
 );
 // --------------------------------------------------------------------------
+
+// --------------------------------------------------------------------------
+// LangChain Expression Language (LCEL) - Streaming - Output parser strings
+// --------------------------------------------------------------------------
+const stream = await nameGenerationChainAsRunnableSequence.stream({
+  product: "really cool robots",
+});
+
+// Instead of waiting for the response, we can stream the output
+for await (const chunk of stream) {
+  console.log(chunk);
+}
+// --------------------------------------------------------------------------
