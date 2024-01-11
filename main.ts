@@ -5,11 +5,13 @@ import { ChatOpenAI } from "npm:@langchain/openai";
 const env = config();
 
 // Define our model
-const chatModel = new ChatOpenAI({
+const model = new ChatOpenAI({
   openAIApiKey: env.OPENAI_API_KEY,
   modelName: "gpt-3.5-turbo-1106",
 });
 
 // TEST: Ask our model a question
-const response = await chatModel.invoke("What is Sploosh.AI?");
-console.log(response.content);
+const response = await model.invoke("What is Sploosh.AI?");
+console.log(
+  `Response: ${JSON.stringify(response, null, 2)}\n\n${response.content}\n`,
+);
