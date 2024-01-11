@@ -7,7 +7,7 @@ This project will explore working with LangChain.js - inspired by [DeepLearning.
 If Deno has been installed on your system, you should be able to rub the `main.js` file with:
 
 ```sh
-% deno run main.js
+% deno run --allow-read main.js
 
 # OPTIONAL: If Node.js and npm are installed, you can run the start script in package.json
 % npm start
