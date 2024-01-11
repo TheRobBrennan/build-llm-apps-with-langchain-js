@@ -1,7 +1,11 @@
 import { config } from "https://deno.land/x/dotenv@v3.2.2/mod.ts";
 import { ChatOpenAI } from "npm:@langchain/openai";
 import { HumanMessage } from "npm:@langchain/core@^0.1.12/messages";
-import { ChatPromptTemplate } from "npm:@langchain/core@^0.1.12/prompts";
+import {
+  ChatPromptTemplate,
+  HumanMessagePromptTemplate,
+  SystemMessagePromptTemplate,
+} from "npm:@langchain/core@^0.1.12/prompts";
 
 // --------------------------------------------------------------------------
 // Load environment variables from our .env file
@@ -31,6 +35,7 @@ console.log(
 // Prompt template - Example 1
 // --------------------------------------------------------------------------
 const prompt = ChatPromptTemplate.fromTemplate(
+  // NOTE: The template below is a single string that accepts an inlined product string
   `What are three good names for a company that makes {product}?`,
 );
 
@@ -49,6 +54,29 @@ const promptResponseMessages = await prompt.formatMessages({
 console.log(
   `promptResponseMessages: ${
     JSON.stringify(promptResponseMessages, null, 2)
+  }\n`,
+);
+// --------------------------------------------------------------------------
+
+// --------------------------------------------------------------------------
+// Prompt template - Example 2
+// --------------------------------------------------------------------------
+const promptFromMessages = ChatPromptTemplate.fromMessages([
+  SystemMessagePromptTemplate.fromTemplate(
+    "You are an expert at picking company names.",
+  ),
+  HumanMessagePromptTemplate.fromTemplate(
+    "What are three good names for a company that makes {product}?",
+  ),
+]);
+
+const promptFromMessagesResponse = await promptFromMessages.formatMessages({
+  product: "shiny objects",
+});
+
+console.log(
+  `promptFromMessagesResponse: ${
+    JSON.stringify(promptFromMessagesResponse, null, 2)
   }\n`,
 );
 // --------------------------------------------------------------------------
