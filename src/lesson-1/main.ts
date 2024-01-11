@@ -7,6 +7,7 @@ import {
   HumanMessagePromptTemplate,
   SystemMessagePromptTemplate,
 } from "npm:@langchain/core@^0.1.12/prompts";
+import {RunnableSequence} from "npm:@langchain/core@^0.1.12/runnables";
 
 // --------------------------------------------------------------------------
 // Load environment variables from our .env file
@@ -131,5 +132,21 @@ const nameGenerationChainResponse = await nameGenerationChain.invoke({
 // NOTE: The output parser returns a string instead of an object like previous examples
 console.log(
   `nameGenerationChainResponse:\n\n${nameGenerationChainResponse}\n`,
+);
+// --------------------------------------------------------------------------
+
+// --------------------------------------------------------------------------
+// LangChain Expression Language (LCEL) - Output parser - String response
+// as a runnable sequence
+// --------------------------------------------------------------------------
+const nameGenerationChainAsRunnableSequence = RunnableSequence.from([prompt, model, outputParser]);
+
+const nameGenerationChainAsRunnableSequenceResponse = await nameGenerationChain.invoke({
+  product: "fancy cookies"
+});
+
+// NOTE: The output parser returns a string instead of an object like previous examples
+console.log(
+  `nameGenerationChainAsRunnableSequenceResponse:\n\n${nameGenerationChainAsRunnableSequenceResponse}\n`,
 );
 // --------------------------------------------------------------------------
