@@ -1,6 +1,7 @@
 import { config } from "https://deno.land/x/dotenv@v3.2.2/mod.ts";
 import { ChatOpenAI } from "npm:@langchain/openai";
 import { HumanMessage } from "npm:@langchain/core@^0.1.12/messages";
+import { StringOutputParser } from "npm:@langchain/core@^0.1.12/output_parsers";
 import {
   ChatPromptTemplate,
   HumanMessagePromptTemplate,
@@ -27,7 +28,7 @@ const response = await model.invoke([
 ]);
 
 console.log(
-  `response: ${JSON.stringify(response, null, 2)}\n\n${response.content}\n`,
+  `response:${JSON.stringify(response, null, 2)}\n\n${response.content}\n`,
 );
 // --------------------------------------------------------------------------
 
@@ -113,5 +114,22 @@ const chainResponse = await chain.invoke({
 
 console.log(
   `chainResponse: ${JSON.stringify(chainResponse, null, 2)}\n`,
+);
+// --------------------------------------------------------------------------
+
+// --------------------------------------------------------------------------
+// LangChain Expression Language (LCEL) - Output parser - String response
+// --------------------------------------------------------------------------
+const outputParser = new StringOutputParser();
+
+const nameGenerationChain = prompt.pipe(model).pipe(outputParser);
+
+const nameGenerationChainResponse = await nameGenerationChain.invoke({
+  product: "fancy cookies",
+});
+
+// NOTE: The output parser returns a string instead of an object like previous examples
+console.log(
+  `nameGenerationChainResponse:\n\n${nameGenerationChainResponse}\n`,
 );
 // --------------------------------------------------------------------------
