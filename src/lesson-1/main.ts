@@ -59,7 +59,8 @@ console.log(
 // --------------------------------------------------------------------------
 
 // --------------------------------------------------------------------------
-// Prompt template - Example 2
+// Prompt template - Example 2 - Explicitly define system and human
+// messages using prompt templates
 // --------------------------------------------------------------------------
 const promptFromMessages = ChatPromptTemplate.fromMessages([
   SystemMessagePromptTemplate.fromTemplate(
@@ -77,6 +78,26 @@ const promptFromMessagesResponse = await promptFromMessages.formatMessages({
 console.log(
   `promptFromMessagesResponse: ${
     JSON.stringify(promptFromMessagesResponse, null, 2)
+  }\n`,
+);
+// --------------------------------------------------------------------------
+
+// --------------------------------------------------------------------------
+// Prompt template - Example 2a - Use shorthand to define messages
+// --------------------------------------------------------------------------
+const promptFromMessagesShorthand = ChatPromptTemplate.fromMessages([
+  ["system", "You are an expert at picking company names."],
+  ["human", "What are three good names for a company that makes {product}?"],
+]);
+
+const promptFromMessagesShorthandResponse = await promptFromMessagesShorthand
+  .formatMessages({
+    product: "shiny objects",
+  });
+
+console.log(
+  `promptFromMessagesShorthandResponse: ${
+    JSON.stringify(promptFromMessagesShorthandResponse, null, 2)
   }\n`,
 );
 // --------------------------------------------------------------------------
