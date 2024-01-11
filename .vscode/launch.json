@@ -6,9 +6,24 @@
   "configurations": [
     {
       "request": "launch",
-      "name": "Deno: Launch program",
+      "name": "Deno: Lesson 0",
       "type": "node",
-      "program": "${workspaceFolder}/main.ts",
+      "program": "${workspaceFolder}/src/lesson-0/main.ts",
+      "cwd": "${workspaceFolder}",
+      "runtimeExecutable": "/Users/rob/.deno/bin/deno",
+      "runtimeArgs": [
+        "run",
+        "--unstable",
+        "--inspect-wait",
+        "--allow-all"
+      ],
+      "attachSimplePort": 9229
+    },
+    {
+      "request": "launch",
+      "name": "Deno: Lesson 1",
+      "type": "node",
+      "program": "${workspaceFolder}/src/lesson-1/main.ts",
       "cwd": "${workspaceFolder}",
       "runtimeExecutable": "/Users/rob/.deno/bin/deno",
       "runtimeArgs": [
