@@ -6,7 +6,7 @@
   "configurations": [
     {
       "request": "launch",
-      "name": "Deno: Lesson 0",
+      "name": "Deno: Lesson 0 - Initial setup and configuration",
       "type": "node",
       "program": "${workspaceFolder}/src/lesson-0/main.ts",
       "cwd": "${workspaceFolder}",
@@ -21,7 +21,7 @@
     },
     {
       "request": "launch",
-      "name": "Deno: Lesson 1",
+      "name": "Deno: Lesson 1 - Building Blocks",
       "type": "node",
       "program": "${workspaceFolder}/src/lesson-1/main.ts",
       "cwd": "${workspaceFolder}",
@@ -36,7 +36,7 @@
     },
     {
       "request": "launch",
-      "name": "Deno: Lesson 2",
+      "name": "Deno: Lesson 2 - Loading and preparing data",
       "type": "node",
       "program": "${workspaceFolder}/src/lesson-2/main.ts",
       "cwd": "${workspaceFolder}",
