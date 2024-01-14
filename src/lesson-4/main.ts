@@ -39,7 +39,13 @@ const vectorStore = new MemoryVectorStore(embeddings);
 // Add our split documents to the vectorstore
 console.log("Adding documents to vectorstore...");
 await vectorStore.addDocuments(splitDocs);
+// --------------------------------------------------------------------------
 
-// Build our retriever
+// --------------------------------------------------------------------------
+// Build our retrieval chain
+// --------------------------------------------------------------------------
 const retriever = vectorStore.asRetriever();
+
+// --------------------------------------------------------------------------
+// Document retrieval in a chain
 // --------------------------------------------------------------------------
