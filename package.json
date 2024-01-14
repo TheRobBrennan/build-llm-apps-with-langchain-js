@@ -3,9 +3,10 @@
   "version": "0.0.0",
   "description": "This project will explore working with LangChain.js - inspired by [DeepLearning.AI: Build LLM Apps with LangChain.js](https://www.deeplearning.ai/short-courses/build-llm-apps-with-langchain-js/).",
   "scripts": {
-    "start": "npm run start:lesson-1",
+    "start": "npm run start:lesson-2",
     "start:lesson-0": "deno run --allow-read --allow-net --allow-env ./src/lesson-0/main.ts",
     "start:lesson-1": "deno run --allow-read --allow-net --allow-env ./src/lesson-1/main.ts",
+    "start:lesson-2": "deno run --allow-read --allow-net --allow-env ./src/lesson-2/main.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -20,6 +21,8 @@
   "homepage": "https://github.com/TheRobBrennan/build-llm-apps-with-langchain-js#readme",
   "dependencies": {
     "@langchain/core": "^0.1.12",
-    "langchain": "^0.1.2"
+    "ignore": "^5.3.0",
+    "langchain": "^0.1.2",
+    "pdf-parse": "^1.1.1"
   }
 }
