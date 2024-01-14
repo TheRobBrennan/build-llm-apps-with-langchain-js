@@ -26,6 +26,11 @@ import { StringOutputParser } from "npm:@langchain/core@^0.1.12/output_parsers";
 // Add history and context
 import { MessagesPlaceholder } from "npm:@langchain/core@^0.1.12/prompts";
 import { AIMessage, HumanMessage } from "npm:@langchain/core@^0.1.12/messages";
+import {
+  RunnablePassthrough,
+  RunnableWithMessageHistory,
+} from "npm:@langchain/core@^0.1.12/runnables";
+import { ChatMessageHistory } from "langchain/stores/message/in_memory";
 
 // --------------------------------------------------------------------------
 // PREREQUISITE: Lesson 5 continues with the previous vectorstore and retrieval chain
@@ -191,3 +196,94 @@ const rephrasedQuestionResponse = await rephraseQuestionChain.invoke({
   history: chatHistory,
 });
 console.log(`\n${rephrasedQuestionResponse}\n\n`);
+
+// --------------------------------------------------------------------------
+// Putting it all together
+// --------------------------------------------------------------------------
+// Build our chain
+const documentRetrievalChainV2 = RunnableSequence.from([
+  (input) => input.standalone_question,
+  retriever,
+  convertDocsToString,
+]);
+
+// Create our answer generation chain prompt
+const ANSWER_CHAIN_SYSTEM_TEMPLATE = `You are an experienced researcher, 
+expert at interpreting and answering questions based on provided sources.
+Using the below provided context and chat history, 
+answer the user's question to the best of 
+your ability 
+using only the resources provided. Be verbose!
+
+<context>
+{context}
+</context>`;
+
+const answerGenerationChainPrompt = ChatPromptTemplate.fromMessages([
+  ["system", ANSWER_CHAIN_SYSTEM_TEMPLATE],
+  new MessagesPlaceholder("history"), // Placeholder for chat messages that will be supplied to the chain
+  // Last item is the human prompt that will incorporate the final question
+  [
+    "human",
+    "Now, answer this question using the previous context and chat history:\n{standalone_question}",
+  ],
+]);
+
+// Supply relevant context, chat history, and the question to the chain
+await answerGenerationChainPrompt.formatMessages({
+  context: "fake retrieved content",
+  standalone_question: "Why is the sky blue?",
+  history: [
+    new HumanMessage("How are you?"),
+    new AIMessage("Fine, thank you!"),
+  ],
+});
+
+// Build our conversational retrieval chain
+const conversationalRetrievalChain = RunnableSequence.from([
+  // Take the original input and add one additional field to it
+  // Why? This will make it a standalone question free of any references to chat history
+  RunnablePassthrough.assign({
+    standalone_question: rephraseQuestionChain,
+  }),
+  // Pass the de-referenced question into our vectorstore
+  RunnablePassthrough.assign({
+    context: documentRetrievalChainV2,
+  }),
+  answerGenerationChainPrompt,
+  new ChatOpenAI({ modelName: "gpt-3.5-turbo" }),
+  new StringOutputParser(),
+]);
+
+// Think of this as tracking chat history for a given session
+const messageHistory = new ChatMessageHistory();
+const finalRetrievalChain = new RunnableWithMessageHistory({
+  runnable: conversationalRetrievalChain,
+  getMessageHistory: (_sessionId) => messageHistory, // Return the message history for a given session
+  historyMessagesKey: "history",
+  inputMessagesKey: "question", // Append the human's question to the chat history
+});
+
+// --------------------------------------------------------------------------
+// THE GRAND EXPERIMENT: Can we ask our original question with the desired
+// follow-up question and get a good answer?
+// --------------------------------------------------------------------------
+console.log(
+  "\n\tTHE GRAND EXPERIMENT: Can we ask our original question with the desired follow-up question and get a good answer?\n",
+);
+// --------------------------------------------------------------------------
+const originalQuestionE1 = "What are the prerequisites for this course?";
+
+const originalAnswerE1 = await finalRetrievalChain.invoke({
+  question: originalQuestionE1,
+}, {
+  configurable: { sessionId: "test" },
+});
+
+const finalResult = await finalRetrievalChain.invoke({
+  question: "Can you list them in bullet point form?",
+}, {
+  configurable: { sessionId: "test" },
+});
+
+console.log(`\n${finalResult}\n\n`);
