@@ -161,3 +161,11 @@ const answer = await retrievalChain.invoke({
 });
 
 console.log(`\nAnswer: ${answer}\n`);
+
+// What happens if we ask a follow-up question?
+const followupAnswer = await retrievalChain.invoke({
+  question: "Can you list them in bullet point form?",
+});
+
+// We're not passing in any chat history context here, so the model will not be able to answer the question
+console.log(followupAnswer);
