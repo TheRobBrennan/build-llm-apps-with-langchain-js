@@ -162,10 +162,25 @@ const answer = await retrievalChain.invoke({
 
 console.log(`\nAnswer: ${answer}\n`);
 
+// --------------------------------------------------------------------------
 // What happens if we ask a follow-up question?
+//
+// NOTE: We are expecting this to fail, since we are not passing in any context
+// --------------------------------------------------------------------------
 const followupAnswer = await retrievalChain.invoke({
   question: "Can you list them in bullet point form?",
 });
 
 // We're not passing in any chat history context here, so the model will not be able to answer the question
 console.log(followupAnswer);
+
+// --------------------------------------------------------------------------
+// What happens if we ask our document retrieval chain directly?
+//
+// NOTE: We are expecting this to fail, since we are not passing in any context
+// --------------------------------------------------------------------------
+const docs = await documentRetrievalChain.invoke({
+  question: "Can you list them in bullet point form?",
+});
+
+console.log(docs);
