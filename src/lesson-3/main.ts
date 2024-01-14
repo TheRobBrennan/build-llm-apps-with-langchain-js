@@ -90,3 +90,16 @@ const pageContents = retrievedDocs.map((doc) => doc.pageContent);
 // Display results
 console.log(`Results: ${retrievedDocs.length} documents found!`);
 console.log(pageContents);
+
+// --------------------------------------------------------------------------
+// Retrievers
+// --------------------------------------------------------------------------
+// Using our existing vectorstore, we can create a retriever that can be used
+// as a LangChain Expresion Language (LCEL) runnable that can be used in a
+// LangChain pipeline.
+//
+// Source - https://js.langchain.com/docs/expression_language/
+// --------------------------------------------------------------------------
+const retriever = vectorStore.asRetriever();
+const retrieverResponse = await retriever.invoke("What is deep learning?");
+console.log(retrieverResponse);
