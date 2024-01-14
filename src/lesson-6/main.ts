@@ -32,6 +32,9 @@ import {
 } from "npm:@langchain/core@^0.1.12/runnables";
 import { ChatMessageHistory } from "langchain/stores/message/in_memory";
 
+// HTTP streaming response
+import { HttpResponseOutputParser } from "langchain/output_parsers";
+
 // --------------------------------------------------------------------------
 // PREREQUISITE: Lesson 6 continues with the context-aware conversational
 // retrieval chain we built in lesson 5.
@@ -241,19 +244,133 @@ await answerGenerationChainPrompt.formatMessages({
 });
 
 // Build our conversational retrieval chain
+// const conversationalRetrievalChain = RunnableSequence.from([
+//   // Take the original input and add one additional field to it
+//   // Why? This will make it a standalone question free of any references to chat history
+//   RunnablePassthrough.assign({
+//     standalone_question: rephraseQuestionChain,
+//   }),
+//   // Pass the de-referenced question into our vectorstore
+//   RunnablePassthrough.assign({
+//     context: documentRetrievalChainV2,
+//   }),
+//   answerGenerationChainPrompt,
+//   new ChatOpenAI({ modelName: "gpt-3.5-turbo" }),
+//   new StringOutputParser(),
+// ]);
+// --------------------------------------------------------------------------
+
+// --------------------------------------------------------------------------
+// OK. We are ready to begin. We no longer need the string output parser that
+// our previous conversationalRetrievalChain had.
+//
+// Why? Application frameworks like Next.js, Express, etc. all expect working
+// with streaming responses that are in bytes and not strings. Fortunately, we
+// can use a LangChain HttpResponseOutputParser to convert our string output
+// into a streaming response.
+// --------------------------------------------------------------------------
+
+// Build our conversational retrieval chain
 const conversationalRetrievalChain = RunnableSequence.from([
-  // Take the original input and add one additional field to it
-  // Why? This will make it a standalone question free of any references to chat history
   RunnablePassthrough.assign({
     standalone_question: rephraseQuestionChain,
   }),
-  // Pass the de-referenced question into our vectorstore
   RunnablePassthrough.assign({
-    context: documentRetrievalChainV2,
+    context: documentRetrievalChain,
   }),
   answerGenerationChainPrompt,
-  new ChatOpenAI({ modelName: "gpt-3.5-turbo" }),
-  new StringOutputParser(),
+  new ChatOpenAI({ modelName: "gpt-3.5-turbo-1106" }),
 ]);
 
-// --------------------------------------------------------------------------
+// "text/event-stream" is also supported
+const httpResponseOutputParser = new HttpResponseOutputParser({
+  contentType: "text/plain",
+});
+
+const messageHistory = new ChatMessageHistory();
+
+const finalRetrievalChain = new RunnableWithMessageHistory({
+  runnable: conversationalRetrievalChain,
+  getMessageHistory: (_sessionId) => messageHistory,
+  historyMessagesKey: "history",
+  inputMessagesKey: "question",
+}).pipe(httpResponseOutputParser);
+
+// Additionally, we'll want to bear in mind that users should not share chat histories, and we should create a new history object per session:
+const messageHistories = {};
+
+const getMessageHistoryForSession = (sessionId) => {
+  if (messageHistories[sessionId] !== undefined) {
+    return messageHistories[sessionId];
+  }
+  const newChatSessionHistory = new ChatMessageHistory();
+  messageHistories[sessionId] = newChatSessionHistory;
+  return newChatSessionHistory;
+};
+
+// We'll recreate our final chain with this new method:
+const finalRetrievalChainV2 = new RunnableWithMessageHistory({
+  runnable: conversationalRetrievalChain,
+  getMessageHistory: getMessageHistoryForSession,
+  inputMessagesKey: "question",
+  historyMessagesKey: "history",
+}).pipe(httpResponseOutputParser);
+
+// Set up a simple server with a handler that calls our chain with a simple streaming response
+const port = 8087;
+const handler = async (request: Request): Response => {
+  const body = await request.json();
+  const stream = await finalRetrievalChainV2.stream({
+    question: body.question,
+  }, { configurable: { sessionId: body.session_id } });
+
+  return new Response(stream, {
+    status: 200,
+    headers: {
+      "Content-Type": "text/plain",
+    },
+  });
+};
+
+// Use a simple Deno server
+Deno.serve({ port }, handler);
+
+const decoder = new TextDecoder();
+
+// readChunks() reads from the provided reader and yields the results into an async iterable
+function readChunks(reader) {
+  return {
+    async *[Symbol.asyncIterator]() {
+      let readResult = await reader.read();
+      while (!readResult.done) {
+        yield decoder.decode(readResult.value);
+        readResult = await reader.read();
+      }
+    },
+  };
+}
+
+const sleep = async () => {
+  return new Promise((resolve) => setTimeout(resolve, 500));
+};
+
+// EXAMPLE 1: Ask a question and log the streaming response from our server as chunks come in
+const response = await fetch(`http://localhost:${port}`, {
+  method: "POST",
+  headers: {
+    "content-type": "application/json",
+  },
+  body: JSON.stringify({
+    question: "What are the prerequisites for this course?",
+    session_id: "1", // Should randomly generate/assign
+  }),
+});
+
+// response.body is a ReadableStream
+const reader = response.body?.getReader();
+
+for await (const chunk of readChunks(reader)) {
+  console.log("CHUNK:", chunk);
+}
+
+await sleep();
