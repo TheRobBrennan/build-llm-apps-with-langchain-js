@@ -376,8 +376,6 @@ for await (const chunk of readChunks(reader)) {
   console.log("CHUNK:", chunk);
 }
 
-// await sleep();
-
 // EXAMPLE 2: Ask a follow-up question to see if our context and chat history has been retained
 console.log(
   "\n\nEXAMPLE 2: Ask a follow-up question to see if our context and chat history has been retained\n\n",
@@ -397,6 +395,28 @@ const responseV2 = await fetch(`http://localhost:${port}`, {
 const readerV2 = responseV2.body?.getReader();
 
 for await (const chunk of readChunks(readerV2)) {
+  console.log("CHUNK:", chunk);
+}
+
+// EXAMPLE 3: Pass in a different session ID to verify that the chat history is not shared between sessions
+console.log(
+  "\n\nEXAMPLE 3: Pass in a different session ID to verify that the chat history is not shared between sessions\n\n",
+);
+const responseV3 = await fetch(`http://localhost:${port}`, {
+  method: "POST",
+  headers: {
+    "content-type": "application/json",
+  },
+  body: JSON.stringify({
+    question: "What did I just ask you?",
+    session_id: "2", // Should randomly generate/assign
+  }),
+});
+
+// response.body is a ReadableStream
+const readerV3 = responseV3.body?.getReader();
+
+for await (const chunk of readChunks(readerV3)) {
   console.log("CHUNK:", chunk);
 }
 
