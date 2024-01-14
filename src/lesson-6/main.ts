@@ -355,6 +355,9 @@ const sleep = async () => {
 };
 
 // EXAMPLE 1: Ask a question and log the streaming response from our server as chunks come in
+console.log(
+  "EXAMPLE 1: Ask a question and log the streaming response from our server as chunks come in\n\n",
+);
 const response = await fetch(`http://localhost:${port}`, {
   method: "POST",
   headers: {
@@ -370,6 +373,30 @@ const response = await fetch(`http://localhost:${port}`, {
 const reader = response.body?.getReader();
 
 for await (const chunk of readChunks(reader)) {
+  console.log("CHUNK:", chunk);
+}
+
+// await sleep();
+
+// EXAMPLE 2: Ask a follow-up question to see if our context and chat history has been retained
+console.log(
+  "\n\nEXAMPLE 2: Ask a follow-up question to see if our context and chat history has been retained\n\n",
+);
+const responseV2 = await fetch(`http://localhost:${port}`, {
+  method: "POST",
+  headers: {
+    "content-type": "application/json",
+  },
+  body: JSON.stringify({
+    question: "Can you list them in bullet point format?",
+    session_id: "1", // Should randomly generate/assign
+  }),
+});
+
+// response.body is a ReadableStream
+const readerV2 = responseV2.body?.getReader();
+
+for await (const chunk of readChunks(readerV2)) {
   console.log("CHUNK:", chunk);
 }
 
