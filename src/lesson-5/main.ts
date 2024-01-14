@@ -179,3 +179,15 @@ const originalAnswer = await retrievalChain.invoke({
 console.log(
   `\n${originalQuestion}\n\n${originalAnswer}\n\n`,
 );
+
+// Step 2 - Rephrase the question with chat history and the original follow-up question from the user
+const chatHistory = [
+  new HumanMessage(originalQuestion),
+  new AIMessage(originalAnswer),
+];
+
+const rephrasedQuestionResponse = await rephraseQuestionChain.invoke({
+  question: "Can you list them in bullet point form?",
+  history: chatHistory,
+});
+console.log(`\n${rephrasedQuestionResponse}\n\n`);
