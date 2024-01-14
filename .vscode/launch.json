@@ -93,6 +93,21 @@
         "--allow-all"
       ],
       "attachSimplePort": 9229
+    },
+    {
+      "request": "launch",
+      "name": "Deno: Lesson 6 - Shipping as a web API",
+      "type": "node",
+      "program": "${workspaceFolder}/src/lesson-6/main.ts",
+      "cwd": "${workspaceFolder}",
+      "runtimeExecutable": "/Users/rob/.deno/bin/deno",
+      "runtimeArgs": [
+        "run",
+        "--unstable",
+        "--inspect-wait",
+        "--allow-all"
+      ],
+      "attachSimplePort": 9229
     }
   ]
 }
