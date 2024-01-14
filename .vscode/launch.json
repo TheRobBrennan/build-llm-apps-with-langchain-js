@@ -78,6 +78,21 @@
         "--allow-all"
       ],
       "attachSimplePort": 9229
+    },
+    {
+      "request": "launch",
+      "name": "Deno: Lesson 5 - Conversational question answering",
+      "type": "node",
+      "program": "${workspaceFolder}/src/lesson-5/main.ts",
+      "cwd": "${workspaceFolder}",
+      "runtimeExecutable": "/Users/rob/.deno/bin/deno",
+      "runtimeArgs": [
+        "run",
+        "--unstable",
+        "--inspect-wait",
+        "--allow-all"
+      ],
+      "attachSimplePort": 9229
     }
   ]
 }
