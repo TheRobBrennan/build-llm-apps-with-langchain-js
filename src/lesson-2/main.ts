@@ -112,4 +112,14 @@ console.log(
 
 // --------------------------------------------------------------------------
 // Let's apply this approach to splitting our CS229 documents
+//
+// NOTE: These chunks are breaking up PDF pages into pieces that will work nicely
+// for our LLM to reason over
 // --------------------------------------------------------------------------
+const docSplitter = new RecursiveCharacterTextSplitter({
+  chunkSize: 512,
+  chunkOverlap: 64,
+});
+const splitCS229Docs = await docSplitter.splitDocuments(rawCS229Docs);
+
+console.log(splitCS229Docs.slice(0, 5));
