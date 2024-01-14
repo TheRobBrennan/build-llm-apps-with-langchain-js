@@ -1,4 +1,4 @@
-import { config } from "https://deno.land/x/dotenv@v3.2.2/mod.ts";
+import "../loaders/env_loader.ts";
 import { ChatOpenAI } from "npm:@langchain/openai";
 import { HumanMessage } from "npm:@langchain/core@^0.1.12/messages";
 import { StringOutputParser } from "npm:@langchain/core@^0.1.12/output_parsers";
@@ -7,16 +7,10 @@ import {
   HumanMessagePromptTemplate,
   SystemMessagePromptTemplate,
 } from "npm:@langchain/core@^0.1.12/prompts";
-import {RunnableSequence} from "npm:@langchain/core@^0.1.12/runnables";
-
-// --------------------------------------------------------------------------
-// Load environment variables from our .env file
-// --------------------------------------------------------------------------
-const env = config();
+import { RunnableSequence } from "npm:@langchain/core@^0.1.12/runnables";
 
 // Define our model
 const model = new ChatOpenAI({
-  openAIApiKey: env.OPENAI_API_KEY,
   modelName: "gpt-3.5-turbo-1106",
 });
 // --------------------------------------------------------------------------
@@ -139,11 +133,16 @@ console.log(
 // LangChain Expression Language (LCEL) - Output parser - String response
 // as a runnable sequence
 // --------------------------------------------------------------------------
-const nameGenerationChainAsRunnableSequence = RunnableSequence.from([prompt, model, outputParser]);
+const nameGenerationChainAsRunnableSequence = RunnableSequence.from([
+  prompt,
+  model,
+  outputParser,
+]);
 
-const nameGenerationChainAsRunnableSequenceResponse = await nameGenerationChain.invoke({
-  product: "fancy cookies"
-});
+const nameGenerationChainAsRunnableSequenceResponse = await nameGenerationChain
+  .invoke({
+    product: "fancy cookies",
+  });
 
 // NOTE: The output parser returns a string instead of an object like previous examples
 console.log(
@@ -169,11 +168,11 @@ for await (const chunk of stream) {
 // --------------------------------------------------------------------------
 const inputs = [
   { product: "large calculators" },
-  { product: "alpaca wool sweaters" }
+  { product: "alpaca wool sweaters" },
 ];
 
 // Batch is useful for performing concurrent operations and multiple generations simultaneously
-const batchResponse = await nameGenerationChain.batch(inputs)
+const batchResponse = await nameGenerationChain.batch(inputs);
 
 console.log(
   `batchResponse: ${JSON.stringify(batchResponse, null, 2)}\n`,

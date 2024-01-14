@@ -12,7 +12,7 @@ If you do not have an OpenAI account, please create a free account and a new API
 
 Once you have an OpenAI API key that you can use for this project, please copy the `.env.sample` file to `.env` and replace the placeholder values.
 
-If your environment is set correctly, you should be able to run the `main.js` file within each `src/lesson-#` folder with:
+If your environment is set correctly, you should be able to run the `main.ts` file within each `src/lesson-#` folder with:
 
 ```sh
 % deno run --allow-read --allow-net --allow-env ./src/lesson-#/main.ts
