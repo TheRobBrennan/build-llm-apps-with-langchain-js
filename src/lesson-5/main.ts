@@ -23,6 +23,10 @@ import { RunnableMap } from "npm:@langchain/core@^0.1.12/runnables";
 import { ChatOpenAI } from "npm:@langchain/openai";
 import { StringOutputParser } from "npm:@langchain/core@^0.1.12/output_parsers";
 
+// Add history and context
+import { MessagesPlaceholder } from "npm:@langchain/core@^0.1.12/prompts";
+import { AIMessage, HumanMessage } from "npm:@langchain/core@^0.1.12/messages";
+
 // --------------------------------------------------------------------------
 // PREREQUISITE: Lesson 5 continues with the previous vectorstore and retrieval chain
 //
@@ -83,7 +87,6 @@ const documentRetrievalChain = RunnableSequence.from([
 const results = await documentRetrievalChain.invoke({
   question: "What are the prerequisites for this course?",
 });
-console.log(results);
 // --------------------------------------------------------------------------
 
 // --------------------------------------------------------------------------
@@ -125,8 +128,6 @@ const runnableMapResponse = await runnableMap.invoke({
   question: "What are the prerequisites for this course?",
 });
 
-console.log(runnableMapResponse);
-
 // Define our model
 const model = new ChatOpenAI({
   modelName: "gpt-3.5-turbo-1106",
@@ -145,5 +146,36 @@ const retrievalChain = RunnableSequence.from([
 ]);
 
 // --------------------------------------------------------------------------
+
 // --------------------------------------------------------------------------
+// Adding history
+//
+// GOAL: Make a new chain that will rephrase the question as a follow-up question.
 // --------------------------------------------------------------------------
+const REPHRASE_QUESTION_SYSTEM_TEMPLATE =
+  `Given the following conversation and a follow up question, 
+rephrase the follow up question to be a standalone question.`;
+
+const rephraseQuestionChainPrompt = ChatPromptTemplate.fromMessages([
+  ["system", REPHRASE_QUESTION_SYSTEM_TEMPLATE],
+  new MessagesPlaceholder("history"),
+  [
+    "human",
+    "Rephrase the following question as a standalone question:\n{question}",
+  ],
+]);
+
+const rephraseQuestionChain = RunnableSequence.from([
+  rephraseQuestionChainPrompt,
+  new ChatOpenAI({ temperature: 0.1, modelName: "gpt-3.5-turbo-1106" }),
+  new StringOutputParser(),
+]);
+
+// Step 1 - Ask the original question
+const originalQuestion = "What are the prerequisites for this course?";
+const originalAnswer = await retrievalChain.invoke({
+  question: originalQuestion,
+});
+console.log(
+  `\n${originalQuestion}\n\n${originalAnswer}\n\n`,
+);
