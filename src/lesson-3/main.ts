@@ -1,6 +1,16 @@
 import "../loaders/env_loader.ts";
+
+// Vector embeddings and similarity
 import { OpenAIEmbeddings } from "npm:@langchain/openai";
 import { similarity } from "npm:ml-distance";
+
+// Import and process a document
+import * as parse from "pdf-parse";
+import { PDFLoader } from "langchain/document_loaders/fs/pdf";
+import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
+
+// In-memory vectorstore
+import { MemoryVectorStore } from "langchain/vectorstores/memory";
 
 // TEST: Print our environment variables
 console.log(`OPENAI_API_KEY: ${Deno.env.get("OPENAI_API_KEY")}\n\n`);
@@ -47,3 +57,36 @@ console.log(
   unrelatedVectorSimilarityScore,
 );
 console.log("Related vector similarity score: ", relatedVectorSimilarityScore);
+
+// --------------------------------------------------------------------------
+// EXAMPLE: Prepare a document for ingestion
+// --------------------------------------------------------------------------
+const loader = new PDFLoader("src/lesson-3/data/machine-learning.pdf");
+const rawCS229Docs = await loader.load();
+const splitter = new RecursiveCharacterTextSplitter({
+  chunkSize: 128,
+  chunkOverlap: 0,
+});
+const splitDocs = await splitter.splitDocuments(rawCS229Docs);
+
+// For demo purposes, we are using an in-memory vectorstore initialized with our embeddings model
+console.log("Initializing vectorstore...");
+const vectorStore = new MemoryVectorStore(embeddings);
+
+// Add our split documents to the vectorstore
+console.log("Adding documents to vectorstore...");
+await vectorStore.addDocuments(splitDocs);
+
+// NOTE: At this point, we have a populated and searchable vectorstore 🤓
+
+// EXERCISE: Try searching for a query in the vectorstore and return the top 4 results
+console.log("Searching for query...");
+const retrievedDocs = await vectorStore.similaritySearch(
+  "What is deep learning?",
+  4,
+);
+const pageContents = retrievedDocs.map((doc) => doc.pageContent);
+
+// Display results
+console.log(`Results: ${retrievedDocs.length} documents found!`);
+console.log(pageContents);
