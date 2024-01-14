@@ -15,6 +15,10 @@ import { MemoryVectorStore } from "langchain/vectorstores/memory";
 import { RunnableSequence } from "npm:@langchain/core@^0.1.12/runnables";
 import { Document } from "npm:@langchain/core@^0.1.12/documents";
 
+// Synthesize a response
+import { ChatPromptTemplate } from "npm:@langchain/core@^0.1.12/prompts";
+import { RunnableMap } from "npm:@langchain/core@^0.1.12/runnables";
+
 // --------------------------------------------------------------------------
 // PREREQUISITE: Lesson 4 starts with the vectorstore from lesson 3 in a
 // variety of helper functions that are not easily available. We can accomplish
@@ -79,4 +83,49 @@ const results = await documentRetrievalChain.invoke({
   question: "What are the prerequisites for this course?",
 });
 console.log(results);
+// --------------------------------------------------------------------------
+
+// --------------------------------------------------------------------------
+// At this point, we have a list of documents that are relevant to our query.
+// However, they are not in a human-readable format - the matching documents
+// are in a format that our LLM can reason about (i.e. <doc>...</doc>).
+// --------------------------------------------------------------------------
+
+// --------------------------------------------------------------------------
+// Synthesize a response
+// --------------------------------------------------------------------------
+const TEMPLATE_STRING = `You are an experienced researcher, 
+expert at interpreting and answering questions based on provided sources.
+Using the provided context, answer the user's question 
+to the best of your ability using only the resources provided. 
+Be verbose!
+
+<context>
+
+{context}
+
+</context>
+
+Now, answer this question using the above context:
+
+{question}`;
+
+const answerGenerationPrompt = ChatPromptTemplate.fromTemplate(
+  TEMPLATE_STRING,
+);
+
+// NOTE: Our prompt requires an object with the context and question properties provided.
+// We will use a runnable map for this - which calls all the runnables or runnable-like functions in parallel with the same output.
+// The output is an object showing the results of each runnable.
+const runnableMap = RunnableMap.from({
+  context: documentRetrievalChain,
+  // @ts-ignore - We don't need to be concerned with input types in this example
+  question: (input) => input.question,
+});
+
+const runnableMapResponse = await runnableMap.invoke({
+  question: "What are the prerequisites for this course?",
+});
+
+console.log(runnableMapResponse);
 // --------------------------------------------------------------------------
