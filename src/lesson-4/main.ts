@@ -19,6 +19,10 @@ import { Document } from "npm:@langchain/core@^0.1.12/documents";
 import { ChatPromptTemplate } from "npm:@langchain/core@^0.1.12/prompts";
 import { RunnableMap } from "npm:@langchain/core@^0.1.12/runnables";
 
+// Augmented generation
+import { ChatOpenAI } from "npm:@langchain/openai";
+import { StringOutputParser } from "npm:@langchain/core@^0.1.12/output_parsers";
+
 // --------------------------------------------------------------------------
 // PREREQUISITE: Lesson 4 starts with the vectorstore from lesson 3 in a
 // variety of helper functions that are not easily available. We can accomplish
@@ -129,3 +133,31 @@ const runnableMapResponse = await runnableMap.invoke({
 
 console.log(runnableMapResponse);
 // --------------------------------------------------------------------------
+
+// --------------------------------------------------------------------------
+// Augmented generation
+// --------------------------------------------------------------------------
+
+// Define our model
+const model = new ChatOpenAI({
+  modelName: "gpt-3.5-turbo-1106",
+});
+
+// Build our retrieval chain
+const retrievalChain = RunnableSequence.from([
+  // Step 1: When an object is supplied to this initializer, it will be used as the input to the chain
+  {
+    context: documentRetrievalChain,
+    question: (input) => input.question,
+  },
+  answerGenerationPrompt, // Step 2: Pass the required input to the prompt (context and question)
+  model, // Step 3: Pass the output to our model
+  new StringOutputParser(),
+]);
+
+// Ask a question
+const answer = await retrievalChain.invoke({
+  question: "What are the prerequisites for this course?",
+});
+
+console.log(`\nAnswer: ${answer}\n`);
